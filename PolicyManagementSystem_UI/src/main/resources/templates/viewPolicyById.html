@@ -42,12 +42,12 @@ document.getElementById("viewByIdForm").addEventListener("submit", function(e){
         return response.json();
     })
     .then(data => {
-        document.getElementById("resPolicyName").textContent = data.policyname;
+        document.getElementById("resPolicyName").textContent = data.policyName;
         document.getElementById("resPolicyId").textContent = data.policyId;
         document.getElementById("resStartDate").textContent = data.startDate;
         document.getElementById("resTotalPremium").textContent = data.totalPremiumAmount;
         document.getElementById("resMaturityAmount").textContent = data.maturityAmount;
-        document.getElementById("resYears").textContent = data.policyterm;
+        document.getElementById("resYears").textContent = data.policyTerm;
         document.getElementById("resStatus").textContent = data.policyStatus;
         document.getElementById("resAnnuityTerm").textContent = data.annuityTerm;
         document.getElementById("result").style.display = "block";

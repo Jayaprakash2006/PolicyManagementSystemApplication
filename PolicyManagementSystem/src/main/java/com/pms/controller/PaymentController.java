@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("payment")
+@RequestMapping("/payment")
 @CrossOrigin(origins = "http://localhost:8031")
 public class PaymentController {
 
@@ -21,13 +21,19 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.getAllPayments());
     }
 
-    @PostMapping("/viewCustPayments")
-    public List<Payment> viewCustPayments(@RequestBody Customer cust) {
-       return paymentService.viewCustPayments(cust.getId());
-    }
+//    @PostMapping("/viewCustPayments")
+//    public List<Payment> viewCustPayments(@RequestParam String customerId) {
+//        return paymentService.viewCustPayments(customerId);
+//    }
+@PostMapping("/viewCustPayments")
+public List<Payment> viewCustPayments(@RequestParam String customerId) {
+    return paymentService.viewCustPayments(customerId);
+}
+
 
     @PostMapping
     public ResponseEntity<Payment> createPayment(@RequestBody Payment payment) {
+
         Payment createdPayment = paymentService.createPayment(
                 payment.getPaymentId(),
                 payment.getCustomer().getId(),

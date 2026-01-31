@@ -14,7 +14,6 @@ import jakarta.validation.constraints.*;
 @Table(name = "customer")
 public class Customer {
 
-    @Valid
     @Id
     @Column(name = "id")
     private String id;
@@ -68,7 +67,7 @@ public class Customer {
 
     @JsonManagedReference(value="customer-payments")
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Payment> payments;
+    private List<Payment> payments;;
     
     @JsonIgnore
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -33,11 +33,16 @@ public class PolicyController {
         return service.viewPolicyDetails(p);
     }
     
-    @PostMapping("/viewCustPolicies")
-    public List<BoughtPolicy> viewCustPolicies(@RequestBody Customer cust){
-        return service.viewCustPolicies(cust.getId());
-    }
-    
+//    @PostMapping("/viewCustPolicies")
+//    public List<BoughtPolicy> viewCustPolicies(@RequestBody Customer cust){
+//        return service.viewCustPolicies(cust.getId());
+//    }
+        @PostMapping("/viewCustPolicies")
+        public List<BoughtPolicy> viewCustPolicies(@RequestParam String customerId) {
+            return service.viewCustPolicies(customerId);
+        }
+
+
     @PostMapping("/viewSchemePolicies")
     public List<Policy> viewSchemePolicies(@RequestBody Scheme sc){
         return service.viewSchemePolicies(sc.getId());
@@ -99,11 +104,11 @@ public class PolicyController {
     @PostMapping("/buy")
     public ResponseEntity<BoughtPolicy> buyPolicy(@RequestBody BoughtPolicy boughtPolicy) throws InvalidEntityException {
         String policyId = boughtPolicy.getPolicy().getPolicyId();
-        String customerId = boughtPolicy.getCustomer().getId(); 
+        String customerId = boughtPolicy.getCustomer().getId();
         BoughtPolicy savedPolicy = service.buyPolicy(policyId, customerId);
         return ResponseEntity.ok(savedPolicy);
     }
-    
+
     @GetMapping("/bought/customer/{customerId}")
     public ResponseEntity<BoughtPolicy[]> getBoughtPoliciesByCustomerId(@PathVariable String customerId) throws InvalidEntityException {
         BoughtPolicy[] policies = service.getBoughtPoliciesByCustomerId(customerId);

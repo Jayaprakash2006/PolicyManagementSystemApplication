@@ -1,5 +1,6 @@
 package com.pms.controller;
 
+import com.pms.entity.Payment;
 import com.pms.entity.Policy;
 import com.pms.entity.BoughtPolicy;
 import com.pms.entity.Customer;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDate;
 
 @Controller
 public class BoughtPolicyUiController {
@@ -48,6 +51,7 @@ public class BoughtPolicyUiController {
     // POST method to submit the buy policy form.
     @PostMapping("/buyPolicy")
     public String buyPolicy(@ModelAttribute("boughtPolicy") BoughtPolicy boughtPolicy,
+                            @RequestParam("paymentType") String paymentTypeStr,
                             @RequestParam("customerId") String customerId,
                             Model model) {
         // Associate the customer with the bought policy
@@ -62,9 +66,24 @@ public class BoughtPolicyUiController {
 
         String url = BACKEND_URL + "/buy";
         ResponseEntity<BoughtPolicy> response = restTemplate.postForEntity(url, requestEntity, BoughtPolicy.class);
-        
+
         if (response.getStatusCode() == HttpStatus.OK) {
+            BoughtPolicy savedPolicy = response.getBody();
+
+            Payment payment = new Payment();
+
+            payment.setAmount(savedPolicy != null ? savedPolicy.getTotalPremiumAmount() : null); // Or whatever logic
+            payment.setPaymentDate(LocalDate.now());
+            payment.setPaymentType(Payment.PaymentType.valueOf(paymentTypeStr));
+            payment.setCustomer(customer);
+            payment.setPolicy(savedPolicy.getPolicy());
+
+            HttpEntity<Payment> paymentRequest = new HttpEntity<>(payment, headers);
+            restTemplate.postForEntity("http://localhost:8030/payment", paymentRequest, Payment.class); // Update URL if needed
+
+            model.addAttribute("boughtPolicy", savedPolicy);
             model.addAttribute("boughtPolicy", response.getBody());
+
             return "boughtPolicyDetail";
         } else {
             model.addAttribute("error", "Failed to buy policy");

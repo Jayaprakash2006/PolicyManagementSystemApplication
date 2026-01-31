@@ -3,13 +3,12 @@ package com.pms.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
+import com.pms.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.pms.entity.Policy;
 import com.pms.entity.Policy.PolicyStatus;
-import com.pms.entity.AnnuityTerm;
-import com.pms.entity.BoughtPolicy;
-import com.pms.entity.Customer;
 import com.pms.exception.InvalidEntityException;
 import com.pms.repository.BoughtPolicyRepository;
 import com.pms.repository.CustomerRepository;
@@ -21,7 +20,10 @@ public class PolicyService {
 
     @Autowired
     private PolicyRepository repo;
-    
+
+    @Autowired
+    private PaymentService paymentService;
+
     @Autowired
     private CustomerRepository customerRepo;
     
@@ -201,6 +203,7 @@ public class PolicyService {
         boughtPolicy.setAnnuityTerm(policy.getAnnuityTerm());
 
         return boughtPolicyRepo.save(boughtPolicy);
+
     }
     
     // Updated updateBoughtPolicy method using the proper identifier field and allowed fields.

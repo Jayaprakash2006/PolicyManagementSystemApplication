@@ -15,8 +15,11 @@ public class Scheme{
 	@Size(max = 20, message = "Scheme name cannot exceed 20 characters")
 	private String schemeName;
 
-	@Size(max = 500, message = "Description cannot exceed 500 characters")
-	@NotBlank(message = "Eligibility criteria is required")
+//	@Size(max = 500, message = "Description cannot exceed 500 characters")
+//	@NotBlank(message = "Eligibility criteria is required")
+//	private String description;
+	@NotBlank(message = "Description is required")
+	@Size(max = 500)
 	private String description;
 
 	@NotBlank(message = "Eligibility criteria is required")
@@ -25,8 +28,11 @@ public class Scheme{
 	@NotBlank(message = "Benefits are required")
 	private String benefits;
 
-	@Size(max = 1000, message = "Scheme details cannot exceed 1000 characters")
-	@NotBlank(message = "Eligibility criteria is required")
+//	@Size(max = 1000, message = "Scheme details cannot exceed 1000 characters")
+//	@NotBlank(message = "Scheme details are required")
+//	private String schemeDetails;
+	@NotBlank(message = "Scheme details are required")
+	@Size(max = 1000)
 	private String schemeDetails;
 
 	private boolean schemeIsActive;

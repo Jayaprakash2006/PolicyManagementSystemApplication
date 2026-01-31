@@ -42,6 +42,12 @@
 
             <label>Annuity Term:</label>
             <input type="text" th:value="${policy.annuityTerm}" readonly>
+
+            <label>Customer ID:</label>
+            <input type="text"
+                   th:value="${session.loggedInCustomer.id}"
+                   readonly>
+
         </div>
 
         <form th:action="@{/buyPolicy}" method="post" th:object="${boughtPolicy}">
@@ -56,8 +62,20 @@
             <input type="hidden" th:field="*{policy.annuityTerm}" />
 
             <!-- Customer ID input -->
-            <label for="customerId">Customer ID:</label>
-            <input type="text" id="customerId" name="customerId" placeholder="Enter Customer ID" required>
+            <input type="hidden"
+                   name="customerId"
+                   th:value="${session.loggedInCustomer.id}">
+
+            <label for="paymentType">Payment Type:</label>
+
+            <select id="paymentType" name="paymentType" required>
+                <option value="">--Select Payment Type--</option>
+                <option value="CASH">Cash</option>
+                <option value="CREDIT_CARD">Credit Card</option>
+                <option value="DEBIT_CARD">Debit Card</option>
+                <option value="NET_BANKING">Net Banking</option>
+                <option value="UPI">UPI</option>
+            </select>
 
             <button type="submit" class="buy-btn">Buy Policy</button>
         </form>
