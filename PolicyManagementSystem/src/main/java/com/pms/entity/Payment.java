@@ -11,7 +11,6 @@ import java.time.LocalDate;
 public class Payment {
 
     @Id
-
     @Column(name = "payment_id") // UUIDs are usually 36 characters long
     private String paymentId;
 

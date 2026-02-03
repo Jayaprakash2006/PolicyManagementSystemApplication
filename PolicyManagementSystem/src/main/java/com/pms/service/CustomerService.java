@@ -35,11 +35,15 @@ public class CustomerService {
         cust.setActive(true);
         cust.setRegDate(LocalDate.now().toString());
         repo.save(cust);
-        
+
         String subject = "Welcome to Policy Trust!";
         String body = "Dear " + cust.getName() + ",\n\nYour registration is successful. Thank you for joining us!\n\nYou will be notified once verified by Admin.";
-        emailService.sendEmail(cust.getEmail(), subject, body);
-        
+        try {
+            emailService.sendEmail(cust.getEmail(), subject, body);
+        } catch (Exception e) {
+            System.out.println("⚠ Email failed, but customer registered");
+        }
+        System.out.println("Mail sent");
         return cust.getId();
     }
     

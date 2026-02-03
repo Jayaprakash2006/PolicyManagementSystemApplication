@@ -76,20 +76,45 @@ public class AdminService {
 		}
 	}
 
-	@Transactional
-	public String acceptCustomer(Customer cust) throws InvalidEntityException {
-		Optional<Customer> existingCustomer = custRepo.findById(cust.getId());
-		if (existingCustomer.isPresent()) {
-			Customer customer = existingCustomer.get();
-			customer.setVerified(true);
-			customer.setActive(true);
-			custRepo.save(customer);
-			emailService.sendAccountStatusEmail(cust.getEmail(), cust.getName(), true);
-			return "Customer accepted";
-		} else {
-			return "Customer not found";
+//	@Transactional
+//	public String acceptCustomer(Customer cust) throws InvalidEntityException {
+//		Optional<Customer> existingCustomer = custRepo.findById(cust.getId());
+//		if (existingCustomer.isPresent()) {
+//			Customer customer = existingCustomer.get();
+//			customer.setVerified(true);
+//			customer.setActive(true);
+//			custRepo.save(customer);
+//			emailService.sendAccountStatusEmail(cust.getEmail(), cust.getName(), true);
+//			return "Customer accepted";
+//		} else {
+//			return "Customer not found";
+//		}
+//	}
+@Transactional
+public String acceptCustomer(Customer cust) throws InvalidEntityException {
+
+	Optional<Customer> existingCustomer = custRepo.findById(cust.getId());
+
+	if (existingCustomer.isPresent()) {
+		Customer customer = existingCustomer.get();
+		customer.setVerified(true);
+		customer.setActive(true);
+		custRepo.save(customer);
+
+		try {
+			emailService.sendAccountStatusEmail(
+					cust.getEmail(), cust.getName(), true);
+		} catch (Exception e) {
+			// log only, DO NOT fail request
+			System.out.println("Email failed: " + e.getMessage());
 		}
+
+		return "Customer accepted";
+	} else {
+		return "Customer not found";
 	}
+}
+
 
 	public String rejectCustomer(Customer cust) throws InvalidEntityException {
 		Optional<Customer> existingCustomer = custRepo.findById(cust.getId());

@@ -32,10 +32,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="policy : ${policies}" class="hover:bg-gray-50">
-                        <td class="border px-4 py-2" th:text="${policy.policyId}"></td>
-                        <td class="border px-4 py-2" th:text="${policy.startDate}"></td>
-                        <td class="border px-4 py-2" th:text="${policy.totalPremiumAmount}"></td>
+                    <tr th:each="bp : ${policies}" class="hover:bg-gray-50">
+                        <td class="border px-4 py-2"  th:text="${bp.policy.policyId}"></td>
+                        <td class="border px-4 py-2" th:text="${bp.startDate}"></td>
+                        <td class="border px-4 py-2" th:text="${bp.totalPremiumAmount}"></td>
                     </tr>
                 </tbody>
             </table>

@@ -30,12 +30,17 @@ public class SchemeService {
                 .orElseThrow(() -> new InvalidEntityException("Scheme not found with ID: " + id)));
     }
 
+//    public Scheme createScheme(Scheme scheme) {
+//        scheme.setId(null); // force insert
+//        log.info("Received payload for scheme creation: {}", scheme);
+//        return schemeRepository.save(scheme);
+//    }
     public Scheme createScheme(Scheme scheme) {
-         log.info("Received payload for scheme creation: {}", scheme);
-        Scheme savedScheme = schemeRepository.save(scheme);
-        log.info("Saved scheme: {}", savedScheme);
-        return savedScheme;
+        scheme.setId(null);
+        return schemeRepository.save(scheme);
     }
+
+
 
     public Scheme updateScheme(int id, Scheme schemeDetails) throws InvalidEntityException{
         return schemeRepository.findById(id).map(scheme -> {

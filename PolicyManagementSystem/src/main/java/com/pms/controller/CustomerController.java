@@ -18,7 +18,7 @@ public class CustomerController {
     CustomerService service;
 
     @PostMapping("/register")
-    public ResponseEntity<String> addCustomer(@Valid @RequestBody Customer cust) {   
+    public ResponseEntity<String> addCustomer(@Valid @RequestBody Customer cust) {
         String response = service.addCustomer(cust);
         return ResponseEntity.ok(response);
     }

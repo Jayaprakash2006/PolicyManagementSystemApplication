@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.pms.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -31,10 +32,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pms.entity.Customer;
-import com.pms.entity.Policy;
-import com.pms.entity.Scheme;
-import com.pms.entity.BoughtPolicy;
 
 @Controller
 public class CustomerUIController {
@@ -114,39 +111,73 @@ public class CustomerUIController {
 //	}
 
 	
-	@PostMapping("/addCustomer")
-	public String registerCustomer(@ModelAttribute("customer") @Validated Customer cust, BindingResult result, Model model) {
-	    try {
-	        ResponseEntity<String> response = restTemplate.postForEntity(BASE_URL + "/customer/register", cust, String.class);
-	        String responseBody = response.getBody();
+//	@PostMapping("/addCustomer")
+//	public String registerCustomer(@ModelAttribute("customer") @Validated Customer cust, BindingResult result, Model model) {
+//	    try {
+//	        ResponseEntity<String> response = restTemplate.postForEntity(BASE_URL + "/customer/register", cust, String.class);
+//	        String responseBody = response.getBody();
+//
+//	        if ("Customer already exists".equals(responseBody)) {
+//	            model.addAttribute("error", "Customer already exists. Please try logging in.");
+//	            return "register";
+//	        }
+//
+//	        model.addAttribute("customerId", response.getBody());
+//	        return "message"; // Success Page
+//
+//	    } catch (HttpClientErrorException e) {
+//	    	 try {
+//	             Map<String, String> errors = objectMapper.readValue(
+//	                 e.getResponseBodyAsString(), new TypeReference<Map<String, String>>() {});
+//
+//	             if (errors != null && !errors.isEmpty()) {
+//	                 model.addAttribute("validationErrors", errors); // Store errors in model
+//	             }
+//	         } catch (JsonProcessingException e1) {
+//	             model.addAttribute("error", "An error occurred while processing the response.");
+//	         }
+//
+//	         return "register";
+//	    }
+//	}
+@PostMapping("/addCustomer")
+public String registerCustomer(
+		@ModelAttribute("customer") @Validated Customer cust,
+		BindingResult result,
+		Model model) {
 
-	        if ("Customer already exists".equals(responseBody)) {
-	            model.addAttribute("error", "Customer already exists. Please try logging in.");
-	            return "register";
-	        }
-
-	        model.addAttribute("customerId", response.getBody());
-	        return "message"; // Success Page
-
-	    } catch (HttpClientErrorException e) {
-	    	 try {
-	             Map<String, String> errors = objectMapper.readValue(
-	                 e.getResponseBodyAsString(), new TypeReference<Map<String, String>>() {});
-
-	             if (errors != null && !errors.isEmpty()) {
-	                 model.addAttribute("validationErrors", errors); // Store errors in model
-	             }
-	         } catch (JsonProcessingException e1) {
-	             model.addAttribute("error", "An error occurred while processing the response.");
-	         }
-
-	         return "register";
-	    }
+	if (result.hasErrors()) {
+		return "register";
 	}
 
+	try {
+		ResponseEntity<String> response =
+				restTemplate.postForEntity(
+						BASE_URL + "/customer/register",
+						cust,
+						String.class
+				);
+
+		String responseBody = response.getBody();
+
+		if ("Customer already exists".equals(responseBody)) {
+			model.addAttribute("error", "Customer already exists. Please login.");
+			return "register";
+		}
+
+		model.addAttribute("customerId", responseBody);
+		return "message";
+
+	} catch (HttpClientErrorException e) {
+		model.addAttribute("error", "Registration failed");
+		return "register";
+	}
+}
 
 
-	
+
+
+
 	@GetMapping("/login")
 	public String showLoginForm(Model model) {
 	    model.addAttribute("customer", new Customer());
@@ -341,7 +372,7 @@ public class CustomerUIController {
 	
 	@GetMapping("/viewSchemes")
 	public String viewSchemes(Model model) {
-		ResponseEntity<List> response = restTemplate.getForEntity(BASE_URL + "/scheme/viewSchemes", List.class);
+		ResponseEntity<List> response = restTemplate.getForEntity(BASE_URL + "/api/schemes/viewSchemes", List.class);
 	    model.addAttribute("schemes", response.getBody());
 	    return "schemesList";
 	}
@@ -367,14 +398,14 @@ public class CustomerUIController {
 
 	    // Make the POST request with JSON headers,
 	    // NOTE: Changed ParameterizedTypeReference to List<BoughtPolicy>
-	    ResponseEntity<List<BoughtPolicy>> response = restTemplate.exchange(
-	        BASE_URL + "/policy/viewCustPolicies",
-	        HttpMethod.POST,
-	        request,
-	        new ParameterizedTypeReference<List<BoughtPolicy>>() {}
-	    );
+	    ResponseEntity<List> response =  restTemplate.postForEntity(
+				BASE_URL + "/policy/viewCustPolicies?customerId=" + customer.getId(),
+				null,
+				List.class
+		);
 
-	    model.addAttribute("policies", response.getBody());
+
+		model.addAttribute("policies", response.getBody());
 	    return "custPolicyList";
 	}
 
@@ -416,15 +447,45 @@ public class CustomerUIController {
 	    model.addAttribute("policies", response.getBody());
 	    return "policyListInCustDashboard";
 	}
-	
-	
-	@GetMapping("/viewCustTransactions")
-    public String showCustTransactions(HttpSession session, Model model) {
-        Customer cust = (Customer) session.getAttribute("loggedInCustomer");
 
-        ResponseEntity<List> response = restTemplate.postForEntity(BASE_URL + "/payment/viewCustPayments", cust  , List.class);
-	    model.addAttribute("payments", response.getBody());
-	    return "custPayments";
-    }
-	
+
+//	@GetMapping("/viewCustTransactions")
+//	public String showCustTransactions(HttpSession session, Model model) {
+//
+//		Customer cust = (Customer) session.getAttribute("loggedInCustomer");
+//
+//		ResponseEntity<List> response =
+//				restTemplate.postForEntity(
+//						BASE_URL + "/payment/viewCustPayments?customerId=" + cust.getId(),
+//						null,
+//						List.class
+//				);
+//
+//		model.addAttribute("payments", response.getBody());
+//		return "custPayments";
+//	}
+@GetMapping("/viewCustTransactions")
+public String showCustTransactions(HttpSession session, Model model) {
+
+	Customer cust = (Customer) session.getAttribute("loggedInCustomer");
+	System.out.println("SESSION CUSTOMER ID = " + cust.getId());
+	HttpEntity<Void> request = new HttpEntity<>(null);
+
+	ResponseEntity<List<Payment>> response =
+			restTemplate.exchange(
+					BASE_URL + "/payment/viewCustPayments?customerId=" + cust.getId(),
+					HttpMethod.POST,
+					request,
+					new ParameterizedTypeReference<List<Payment>>() {}
+			);
+
+	model.addAttribute("payments", response.getBody());
+	System.out.println("Payments size = " + response.getBody().size());
+
+	return "custPayments";
+}
+
+
+
+
 }
